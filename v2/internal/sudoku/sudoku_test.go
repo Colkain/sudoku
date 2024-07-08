@@ -149,7 +149,9 @@ func TestSudoku_Generate(t *testing.T) {
 		for x := 0; x < sudoku.BoardSize; x++ {
 			for y := 0; y < sudoku.BoardSize; y++ {
 				_, err := grid.CheckValidity(x, y, grid.Board[x][y])
-				t.Errorf("CheckValidity(%d, %d, %d) = %v", x, y, grid.Board[x][y], err)
+				if err.Error() != sudoku.ErrNumberExists {
+					t.Errorf("CheckValidity(%d, %d, %d) = %v", x, y, grid.Board[x][y], err)
+				}
 			}
 		}
 	})

@@ -2,7 +2,7 @@ package sudoku
 
 import (
 	"fmt"
-	"log"
+	"math"
 	"math/rand"
 )
 
@@ -17,47 +17,20 @@ const BoardSize = 9
 
 type Sudoku struct {
 	Board [BoardSize][BoardSize]int
+	SRN   int
 }
 
 func Init() *Sudoku {
 	return &Sudoku{
 		Board: [BoardSize][BoardSize]int{},
+		SRN:   int(float64(BoardSize) / math.Sqrt(float64(BoardSize))),
 	}
 }
 
 // solveSudoku solves the Sudoku puzzle using backtracking
 func (s *Sudoku) Generate() {
-	cells := rand.Perm(BoardSize * BoardSize)
-	log.Println("Solving")
-	s.solve(cells, 0)
-	// log.Println("Shuffling")
-	// s.shuffle()
-}
-
-func (s *Sudoku) solve(cells []int, index int) bool {
-	if index >= len(cells) {
-		return true // Puzzle solved
-	}
-
-	cell := cells[index]
-	row, col := cell/BoardSize, cell%BoardSize
-
-	for num := 1; num <= 9; num++ {
-		isValid, _ := s.CheckValidity(row, col, num)
-		if isValid {
-			s.SetBoardValue(row, col, num)
-
-			if s.solve(cells, index+1) {
-				log.Printf("Solved cell [%v, %v]=%v", row, col, num)
-				return true
-			}
-
-			log.Printf("Backtracking for cell [%v,%v]=%v", row, col, num)
-			s.SetBoardValue(row, col, 0) // Backtrack
-		}
-	}
-
-	return false
+	s.fillDiagonal()
+	s.fillRemaining(0, s.SRN)
 }
 
 func (s *Sudoku) SetBoardValue(x, y, number int) {
@@ -101,45 +74,62 @@ func (s *Sudoku) CheckValidity(x, y, number int) (bool, error) {
 	return true, nil
 }
 
-// findEmptyCell finds the first empty cell in the Sudoku board
-func (s *Sudoku) findEmptyCell() *[2]int {
-	for i := 0; i < BoardSize; i++ {
-		for j := 0; j < BoardSize; j++ {
-			if s.Board[i][j] == 0 {
-				return &[2]int{i, j}
+func (s *Sudoku) fillDiagonal() {
+	for i := 0; i < BoardSize; i += s.SRN {
+		s.fillBox(i, i)
+	}
+}
+
+func (s *Sudoku) fillRemaining(i, j int) bool {
+	if i == BoardSize-1 && j == BoardSize {
+		return true
+	}
+	if j == BoardSize {
+		i++
+		j = 0
+	}
+	if s.Board[i][j] != 0 {
+		return s.fillRemaining(i, j+1)
+	}
+
+	for num := 1; num <= BoardSize; num++ {
+		if isValid, _ := s.CheckValidity(i, j, num); isValid {
+			s.SetBoardValue(i, j, num)
+			if s.fillRemaining(i, j+1) {
+				return true
+			}
+
+			s.SetBoardValue(i, j, 0) // Backtrack
+		}
+	}
+
+	return false
+}
+
+func (s *Sudoku) fillBox(row, col int) {
+	var num int
+	for i := 0; i < s.SRN; i++ {
+		for j := 0; j < s.SRN; j++ {
+			for {
+				num = rand.Intn(BoardSize) + 1
+				if s.unUsedInBox(row, col, num) {
+					break
+				}
+			}
+			s.SetBoardValue(row+i, col+j, num)
+		}
+	}
+}
+
+func (s *Sudoku) unUsedInBox(rowStart, colStart, num int) bool {
+	for i := 0; i < s.SRN; i++ {
+		for j := 0; j < s.SRN; j++ {
+			if s.Board[rowStart+i][colStart+j] == num {
+				return false
 			}
 		}
 	}
-	return nil
-}
-
-// shuffleSubgrids shuffles rows and columns within each 3x3 subgrid
-func (s *Sudoku) shuffle() {
-	// Shuffle rows within subgrids
-	for startRow := 0; startRow < BoardSize; startRow += 3 {
-		s.shuffleRows(startRow)
-	}
-
-	// Shuffle columns within subgrids
-	for startCol := 0; startCol < BoardSize; startCol += 3 {
-		s.shuffleColumns(startCol)
-	}
-}
-
-func (s *Sudoku) shuffleRows(startRow int) {
-	for i := startRow; i < startRow+3; i++ {
-		rand.Shuffle(BoardSize, func(j, k int) {
-			s.Board[i][j], s.Board[i][k] = s.Board[i][k], s.Board[i][j]
-		})
-	}
-}
-
-func (s *Sudoku) shuffleColumns(startCol int) {
-	for i := startCol; i < startCol+3; i++ {
-		rand.Shuffle(BoardSize, func(j, k int) {
-			s.Board[j][i], s.Board[k][i] = s.Board[k][i], s.Board[j][i]
-		})
-	}
+	return true
 }
 
 // // HideNumbers randomly hides numbers from the Sudoku board based on difficulty
