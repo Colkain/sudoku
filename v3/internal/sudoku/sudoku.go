@@ -14,14 +14,19 @@ const ErrNumberExistsInColumn = "number exists in this column"
 const ErrNumberExistsInRow = "number exists in this row"
 
 const BoardSize = 9
+const NumbersToHide = 12
+
+type Grid [BoardSize][BoardSize]int
 
 type Sudoku struct {
-	Board [BoardSize][BoardSize]int
+	Board Grid
+	Game  Grid
 	SRN   int
 }
 
 func Init() *Sudoku {
 	return &Sudoku{
+		Game:  [BoardSize][BoardSize]int{},
 		Board: [BoardSize][BoardSize]int{},
 		SRN:   int(float64(BoardSize) / math.Sqrt(float64(BoardSize))),
 	}
@@ -31,10 +36,11 @@ func Init() *Sudoku {
 func (s *Sudoku) Generate() {
 	s.fillDiagonal()
 	s.fillRemaining(0, s.SRN)
+	s.HideNumbers()
 }
 
-func (s *Sudoku) SetBoardValue(x, y, number int) {
-	s.Board[x][y] = number
+func (g *Grid) SetBoardValue(x, y, number int) {
+	g[x][y] = number
 }
 
 func (s *Sudoku) CheckValidity(x, y, number int) (bool, error) {
@@ -94,12 +100,12 @@ func (s *Sudoku) fillRemaining(i, j int) bool {
 
 	for num := 1; num <= BoardSize; num++ {
 		if isValid, _ := s.CheckValidity(i, j, num); isValid {
-			s.SetBoardValue(i, j, num)
+			s.Board.SetBoardValue(i, j, num)
 			if s.fillRemaining(i, j+1) {
 				return true
 			}
 
-			s.SetBoardValue(i, j, 0) // Backtrack
+			s.Board.SetBoardValue(i, j, 0) // Backtrack
 		}
 	}
 
@@ -116,7 +122,7 @@ func (s *Sudoku) fillBox(row, col int) {
 					break
 				}
 			}
-			s.SetBoardValue(row+i, col+j, num)
+			s.Board.SetBoardValue(row+i, col+j, num)
 		}
 	}
 }
@@ -130,4 +136,17 @@ func (s *Sudoku) unUsedInBox(rowStart, colStart, num int) bool {
 		}
 	}
 	return true
+}
+
+func (s *Sudoku) HideNumbers() {
+	count := NumbersToHide
+	s.Game = s.Board
+	for count != 0 {
+		i := rand.Intn(BoardSize)
+		j := rand.Intn(BoardSize)
+		if s.Game[i][j] != 0 {
+			s.Game.SetBoardValue(i, j, 0)
+			count--
+		}
+	}
 }
