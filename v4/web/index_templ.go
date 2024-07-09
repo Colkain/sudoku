@@ -29,7 +29,7 @@ func Index() templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"game\" class=\"w-full min-h-screen flex flex-col items-center bg-gray-100\"><h1 class=\"font-bold uppercase mt-5 mb-2\">Sudoku Puzzle</h1><div className=\"flex\"><button class=\"border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm\" hx-get=\"/generate\" hx-target=\"#game\" hx-swap=\"innerHTML\">New</button> <button class=\"border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm\" hx-get=\"/solve\" hx-target=\"#game\" hx-swap=\"innerHTML\">Solve</button></div><div class=\"my-5\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full min-h-screen flex flex-col items-center bg-gray-100\"><h1 class=\"font-bold uppercase mt-5 mb-2\">Sudoku Puzzle</h1><div className=\"flex\"><button class=\"border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm\" hx-get=\"/generate\" hx-target=\"#game\" hx-swap=\"innerHTML\">New</button> <button class=\"border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm\" hx-get=\"/solve\" hx-target=\"#game\" hx-swap=\"innerHTML\">Solve</button></div><div class=\"my-5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

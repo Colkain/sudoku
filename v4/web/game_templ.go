@@ -34,7 +34,7 @@ func Game(board sudoku.Grid) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"\" action=\"/validate\" method=\"POST\" hx-target=\"#message\" hx-swap=\"innerHTML\"><table class=\"mb-2\" id=\"sudoku-board my-2\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"#game\" action=\"/validate\" method=\"POST\" hx-target=\"#message\" hx-swap=\"innerHTML\"><table class=\"mb-2\" id=\"sudoku-board my-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
