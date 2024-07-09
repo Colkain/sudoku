@@ -2,12 +2,13 @@ package web
 
 import (
 	"github.com/colkain/sudoku/v4/internal/sudoku"
+	"fmt"
 	"strconv"
 )
 
-templ Game(board sudoku.Grid) {
+templ Game(board sudoku.Grid, submitted bool) {
 	@Index() {
-		<form id="#game" action="/validate" method="POST" hx-target="#message" hx-swap="innerHTML">
+		<form id="#game" action="/validate" method="POST">
 			<table class="mb-2" id="sudoku-board my-2">
 				for x, row := range board {
 					<tr>
@@ -20,10 +21,18 @@ templ Game(board sudoku.Grid) {
 								}
 							>
 								<input
+									name={ fmt.Sprintf("%d,%d", x, y) }
 									type="text"
-									class={ "border border-gray-300 w-full h-full text-center", templ.KV("bg-gray-200 cursor-default", cell != 0) }
-									if cell != 0 {
-										value={ strconv.Itoa(cell) }
+									class={ "border border-gray-300 w-full h-full text-center", templ.KV("bg-gray-200 cursor-default", cell != 0), templ.KV("bg-red-500", cell < 0) }
+									required
+									pattern="[1-9]{1}"
+									if cell > 0 {
+										value={ strconv.Itoa(int(cell)) }
+										readonly
+									}
+									else
+									if cell < 0 {
+										value={ strconv.Itoa(int(-cell)) }
 										readonly
 									} else {
 										value={ "" }
@@ -35,7 +44,9 @@ templ Game(board sudoku.Grid) {
 				}
 			</table>
 			<div class="w-full flex justify-end">
-				<button class="border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm" type="submit">Submit</button>
+				if !submitted {
+					<button class="border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm" type="submit">Submit</button>
+				}
 			</div>
 		</form>
 	}

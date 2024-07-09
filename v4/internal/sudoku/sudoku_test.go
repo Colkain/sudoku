@@ -9,7 +9,7 @@ import (
 func TestSudoku_Init(t *testing.T) {
 	t.Run("Initialize sudoku board", func(t *testing.T) {
 		want := &sudoku.Sudoku{
-			Board: [sudoku.BoardSize][sudoku.BoardSize]int{},
+			Board: [sudoku.BoardSize][sudoku.BoardSize]int32{},
 		}
 		got := sudoku.Init()
 
@@ -36,7 +36,7 @@ func TestSudoku_CheckValidity(t *testing.T) {
 
 	t.Run("Number already exists", func(t *testing.T) {
 		grid = &sudoku.Sudoku{
-			Board: [sudoku.BoardSize][sudoku.BoardSize]int{
+			Board: [sudoku.BoardSize][sudoku.BoardSize]int32{
 				{1, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -57,7 +57,7 @@ func TestSudoku_CheckValidity(t *testing.T) {
 
 	t.Run("Number already exists in cell", func(t *testing.T) {
 		grid = &sudoku.Sudoku{
-			Board: [sudoku.BoardSize][sudoku.BoardSize]int{
+			Board: [sudoku.BoardSize][sudoku.BoardSize]int32{
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 1, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -78,7 +78,7 @@ func TestSudoku_CheckValidity(t *testing.T) {
 
 	t.Run("Number already exists in column", func(t *testing.T) {
 		grid = &sudoku.Sudoku{
-			Board: [sudoku.BoardSize][sudoku.BoardSize]int{
+			Board: [sudoku.BoardSize][sudoku.BoardSize]int32{
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -99,7 +99,7 @@ func TestSudoku_CheckValidity(t *testing.T) {
 
 	t.Run("Number already exists in row", func(t *testing.T) {
 		grid = &sudoku.Sudoku{
-			Board: [sudoku.BoardSize][sudoku.BoardSize]int{
+			Board: [sudoku.BoardSize][sudoku.BoardSize]int32{
 				{0, 0, 0, 0, 0, 1, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -123,7 +123,7 @@ func TestSudoku_SetValue(t *testing.T) {
 	t.Run("Initialize sudoku board", func(t *testing.T) {
 		grid := sudoku.Init()
 		want := &sudoku.Sudoku{
-			Board: [sudoku.BoardSize][sudoku.BoardSize]int{
+			Board: [sudoku.BoardSize][sudoku.BoardSize]int32{
 				{1, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
