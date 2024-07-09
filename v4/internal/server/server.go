@@ -1,7 +1,7 @@
 package server
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +11,9 @@ import (
 )
 
 const JsonContentType = "application/json"
+const ErrConvertRow = "invalid row data"
+const ErrConvertCol = "invalid col data"
+const ErrConvertVal = "invalid val data"
 
 // PlayerServer is a HTTP interface for player information.
 type PlayerServer struct {
@@ -46,20 +49,9 @@ func (p *PlayerServer) solveHandler(w http.ResponseWriter, r *http.Request) {
 
 func (p *PlayerServer) validateHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	for i, v := range r.PostForm {
-		value, err := strconv.Atoi(v[0])
-		if err != nil {
-			log.Fatalln(err)
-		}
-		x, err := strconv.Atoi(i[:1])
-		if err != nil {
-			log.Fatalln(err)
-		}
-		y, err := strconv.Atoi(i[2:])
-		if err != nil {
-			log.Fatalln(err)
-		}
-		p.game.Game.SetBoardValue(x, y, int32(value))
+	_, err := p.ConvertFormToGame(r.PostForm)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	for x := range p.game.Board {
@@ -71,4 +63,27 @@ func (p *PlayerServer) validateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	templ.Handler(web.Game(p.game.Game, true)).ServeHTTP(w, r)
+}
+
+func (p *PlayerServer) ConvertFormToGame(postForm map[string][]string) (*sudoku.Sudoku, error) {
+	for i, v := range postForm {
+		value, err := strconv.Atoi(v[0])
+		if err != nil {
+			return nil, fmt.Errorf(ErrConvertVal)
+		}
+
+		x, err := strconv.Atoi(i[:1])
+		if err != nil {
+			return nil, fmt.Errorf(ErrConvertRow)
+		}
+
+		y, err := strconv.Atoi(i[2:])
+		if err != nil {
+			return nil, fmt.Errorf(ErrConvertCol)
+		}
+
+		p.game.Game.SetBoardValue(x, y, int32(value))
+	}
+
+	return p.game, nil
 }
