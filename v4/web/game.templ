@@ -1,0 +1,42 @@
+package web
+
+import (
+	"github.com/colkain/sudoku/v4/internal/sudoku"
+	"strconv"
+)
+
+templ Game(board sudoku.Grid) {
+	@Index() {
+		<form id="#game" action="/validate" method="POST" hx-target="#message" hx-swap="innerHTML">
+			<table class="mb-2" id="sudoku-board my-2">
+				for x, row := range board {
+					<tr>
+						for y, cell := range row {
+							<td
+								class={
+									"w-10 h-10",
+									templ.KV("border-black border-t-2", x%3 == 0 && x != 0),
+									templ.KV("border-black border-l-2", y%3 == 0 && y != 0),
+								}
+							>
+								<input
+									type="text"
+									class={ "border border-gray-300 w-full h-full text-center", templ.KV("bg-gray-200 cursor-default", cell != 0) }
+									if cell != 0 {
+										value={ strconv.Itoa(cell) }
+										readonly
+									} else {
+										value={ "" }
+									}
+								/>
+							</td>
+						}
+					</tr>
+				}
+			</table>
+			<div class="w-full flex justify-end">
+				<button class="border border-black hover:bg-blue-300 px-2 py-1 rounded-lg text-sm" type="submit">Submit</button>
+			</div>
+		</form>
+	}
+}
